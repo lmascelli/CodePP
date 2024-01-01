@@ -1,2 +1,2 @@
-# CodePP
-a c++ library for managing MEA (microelectrode array) recording
+# cpp_template
+A template for c++ projects
