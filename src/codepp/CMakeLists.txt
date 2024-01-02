@@ -1,6 +1,9 @@
 # Create a library interface that can be configured with the requested options
 add_library(CodePPLib INTERFACE)
 
+# ##############################################################################
+# CodePPLib_Core library
+
 # FORMAT LIBRARY
 include(FetchContent)
 set(FMT_TAG 10.1.1)
@@ -10,22 +13,22 @@ FetchContent_Declare(
   GIT_TAG ${FMT_TAG})
 FetchContent_MakeAvailable(fmt)
 
-# ##############################################################################
-# CodePPLib_Core library
-
-set(CodePPLib_Core_HEADER_LIST "types/signal.hpp" "types/mea.hpp")
+set(CodePPLib_Core_HEADER_LIST "types/signal.hpp" "types/mea.hpp"
+                               "operations/spikes_detection.hpp")
 list(TRANSFORM CodePPLib_Core_HEADER_LIST
      PREPEND "${CodePP_SOURCE_DIR}/include/codepp/core/")
 
-set(CodePPLib_Core_SOURCES "types/signal.cpp")
+set(CodePPLib_Core_SOURCES "types/signal.cpp" "types/mea.cpp"
+                           "operations/spikes_detection.hpp")
 list(TRANSFORM CodePPLib_Core_SOURCES
      PREPEND "${CodePP_SOURCE_DIR}/src/codepp/core/")
 
-add_library(CodePPLib_Core ${CodePPLib_Core_SOURCES})
-target_link_libraries(CodePPLib_Core INTERFACE all_warnings warnings_are_errors
-                                               fmt::fmt)
-target_include_directories(CodePPLib_Core
-                           INTERFACE "${CMAKE_SOURCE_DIR}/include")
+add_library(CodePPLib_Core ${CodePPLib_Core_HEADER_LIST}
+                           ${CodePPLib_Core_SOURCES})
+target_link_libraries(CodePPLib_Core PUBLIC all_warnings warnings_are_errors
+                                            fmt::fmt)
+target_include_directories(CodePPLib_Core PUBLIC "${CMAKE_SOURCE_DIR}/include")
+target_compile_features(CodePPLib_Core PUBLIC cxx_std_20)
 
 # ##############################################################################
 # CodePPLib_Meas library
@@ -70,7 +73,6 @@ list(TRANSFORM CodePPLib_hdf5_inspector_SOURCES
 add_library(CodePPLib_hdf5_inspector ${CodePPLib_hdf5_inspector_SOURCES})
 target_link_libraries(CodePPLib_hdf5_inspector PRIVATE CodePPLib_hdf5)
 
-
 # ##############################################################################
 # CodePPLib_csv library
 
@@ -79,12 +81,10 @@ list(TRANSFORM CodePPLib_csv_HEADER_LIST
      PREPEND "${CodePP_SOURCE_DIR}/include/codepp/")
 
 set(CodePPLib_csv_SOURCES "csv/csv.cpp")
-list(TRANSFORM CodePPLib_csv_SOURCES
-     PREPEND "${CodePP_SOURCE_DIR}/src/codepp/")
+list(TRANSFORM CodePPLib_csv_SOURCES PREPEND "${CodePP_SOURCE_DIR}/src/codepp/")
 
 add_library(CodePPLib_csv ${CodePPLib_csv_SOURCES})
 target_link_libraries(CodePPLib_csv PUBLIC CodePPLib_Core)
-
 
 # ##############################################################################
 # Link selected libraries to the main CodePPLib
@@ -100,5 +100,5 @@ if(COMPONENT_HDF5)
   endif()
 endif()
 if(COMPONENT_CSV)
-    target_link_libraries(CodePPLib INTERFACE CodePPLib_csv)
+  target_link_libraries(CodePPLib INTERFACE CodePPLib_csv)
 endif()

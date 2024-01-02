@@ -2,6 +2,14 @@
 #include <prelude.hpp>
 
 namespace CodePP {
+
+using sample = unsigned int;
+
+enum UNIT {
+  UNKNOWN = -1,
+  VOLT,
+};
+
 template <typename T> class Signal {
 public:
   Signal() { sampling_frequency = 0; }
@@ -26,10 +34,19 @@ public:
     return ret;
   }
 
+  // actual data
   vector<T> data;
+
+  // for absissa conversion from sample number to time
   float sampling_frequency;
+
+  // unit measure data
+  UNIT unit;
+  int scale;
 
 private:
   bool moved = false;
 };
+
+using SignalF = Signal<float>;
 }; // namespace CodePP

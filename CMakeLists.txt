@@ -8,9 +8,9 @@ project(CodePP LANGUAGES CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 include("${CMAKE_SOURCE_DIR}/cmake/compiler.cmake")
 
-option(COMPONENT_MEAS "include the MEAs implementatiions" OFF)
+option(COMPONENT_MEAS "include the MEAs implementatiions" ON)
 option(COMPONENT_HDF5 "include the hdf5 interface" ON)
-option(COMPONENT_HDF5_INSPECTOR "include the hdf5 inspector utility library" OFF)
+option(COMPONENT_HDF5_INSPECTOR "include the hdf5 inspector utility library" ON)
 option(COMPONENT_CSV "include the csv interface" OFF)
 
 add_subdirectory("src/codepp")

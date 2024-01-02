@@ -1,18 +1,27 @@
 #pragma once
+#include <codepp/core/types/electrode.hpp>
 #include <prelude.hpp>
 
 namespace CodePP {
 
-template <typename M>
-concept MEA_type =
-    requires(const M &m, const string &label, Result<int> row,
-             Result<int> column, bool contained, const string &name) {
-      m = M::build();
-      row = M::get_row(label);
-      column = M::get_column(label);
-      contained = M::contains(label);
-      contained = M::contains(row, column);
-      M::get_label(row, column);
-      name = M::get_name();
-    };
-}
+class ActiveElectrodeIterator {};
+
+class Mea {
+public:
+  Mea(vector<Electrode> electrodes);
+  Mea(const Mea &copied) = delete;
+  auto operator=(const Mea &copied) = delete;
+  Mea(Mea &&moved) = default;
+  auto operator=(Mea &&moved) -> Mea & = default;
+
+  [[nodiscard]] auto get_electrode(int row, int column)
+      -> Result<const Electrode>;
+  [[nodiscard]] auto get_electrode(const string &column)
+      -> Result<const Electrode>;
+  [[nodiscard]] auto get_electrodes() const -> const vector<Electrode> &;
+
+private:
+  vector<Electrode> electrodes;
+  vector<Electrode> active_electrodes;
+};
+}; // namespace CodePP
