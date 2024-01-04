@@ -122,8 +122,7 @@ inline auto DatasetInspector::Field::strvlen() const -> string {
   }
 }
 
-inline auto H5TypeToInspectorType(H5T_class_t value) -> DatasetInspector::Type {
-  using Type = DatasetInspector::Type;
+inline auto H5TypeToInspectorType(H5T_class_t value) -> Type {
   switch (value) {
   case H5T_NO_CLASS:
     return Type::NOT_IMPLEMENTED;

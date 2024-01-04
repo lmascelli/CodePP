@@ -13,13 +13,15 @@ FetchContent_Declare(
   GIT_TAG ${FMT_TAG})
 FetchContent_MakeAvailable(fmt)
 
-set(CodePPLib_Core_HEADER_LIST "types/signal.hpp" "types/mea.hpp"
-                               "operations/spikes_detection.hpp")
+set(CodePPLib_Core_HEADER_LIST
+    "types/signal.hpp" "types/mea.hpp" "operations/math.hpp"
+    "operations/spikes_detection.hpp")
 list(TRANSFORM CodePPLib_Core_HEADER_LIST
      PREPEND "${CodePP_SOURCE_DIR}/include/codepp/core/")
 
-set(CodePPLib_Core_SOURCES "types/signal.cpp" "types/mea.cpp"
-                           "operations/spikes_detection.hpp")
+set(CodePPLib_Core_SOURCES
+    "types/signal.cpp" "types/mea.cpp" "operations/math.cpp"
+    "operations/spikes_detection.cpp")
 list(TRANSFORM CodePPLib_Core_SOURCES
      PREPEND "${CodePP_SOURCE_DIR}/src/codepp/core/")
 
@@ -48,13 +50,17 @@ target_link_libraries(CodePPLib_Meas PUBLIC CodePPLib_Core)
 # codepplib_hdf5 library
 find_package(HDF5 CONFIG REQUIRED)
 
-set(CodePPLib_hdf5_HEADER_LIST "hdf5/h5utils.hpp" "hdf5/h5analog.hpp"
-                               "hdf5/h5content.hpp")
+# set(CodePPLib_hdf5_HEADER_LIST "hdf5/h5utils.hpp" "hdf5/h5analog.hpp"
+# "hdf5/h5content.hpp" "hdf5/h5export.hpp")
+set(CodePPLib_hdf5_HEADER_LIST "hdf5/h5utils.hpp" "hdf5/h5import.hpp"
+                               "hdf5/h5export.hpp")
 list(TRANSFORM CodePPLib_hdf5_HEADER_LIST
      PREPEND "${CodePP_SOURCE_DIR}/include/codepp/")
 
-set(CodePPLib_hdf5_SOURCES "hdf5/h5utils.cpp" "hdf5/h5analog.cpp"
-                           "hdf5/h5content.cpp")
+# set(CodePPLib_hdf5_SOURCES "hdf5/h5utils.cpp" "hdf5/h5analog.cpp"
+#                            "hdf5/h5content.cpp" "hdf5/h5export.cpp")
+set(CodePPLib_hdf5_SOURCES "hdf5/h5utils.cpp" 
+                           "hdf5/h5import.cpp" "hdf5/h5export.cpp")
 list(TRANSFORM CodePPLib_hdf5_SOURCES
      PREPEND "${CodePP_SOURCE_DIR}/src/codepp/")
 

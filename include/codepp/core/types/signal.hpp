@@ -1,42 +1,30 @@
 #pragma once
+#include <functional>
 #include <prelude.hpp>
 
 namespace CodePP {
 
-using sample = unsigned int;
+using sample = size_t;
 
 enum UNIT {
   UNKNOWN = -1,
   VOLT,
 };
 
-template <typename T> class Signal {
+class Signal {
 public:
-  Signal() { sampling_frequency = 0; }
+  Signal(bool holds_data = true);
   Signal(const Signal &copied) = delete;
   auto operator=(const Signal &copied) = delete;
-  Signal(Signal &&moved) {
-    moved.moved = true;
-    sampling_frequency = moved.sampling_frequency;
-    data = std::move(moved.data);
-  }
-  auto operator=(Signal &&moved) -> Signal {
-    moved.moved = true;
-    Signal ret;
-    ret.sampling_frequency = moved.sampling_frequency;
-    ret.data = std::move(moved.data);
-    return ret;
-  }
-  [[nodiscard]] auto copy() const -> Signal {
-    Signal ret;
-    ret.sampling_frequency = sampling_frequency;
-    std::ranges::copy(data, begin(ret.data));
-    return ret;
-  }
+  Signal(Signal &&moved);
+  auto operator=(Signal &&moved) -> Signal;
+  [[nodiscard]] auto copy() const -> Signal;
 
-  // actual data
-  vector<T> data;
-
+  [[nodiscard]] auto get_data() const -> std::span<const float>;
+  [[nodiscard]] auto get_held_data()
+      -> Result<std::reference_wrapper<vector<float>>>;
+  [[nodiscard]] auto operator()(unsigned long long start, long long end = 0)
+      -> Result<Signal>;
   // for absissa conversion from sample number to time
   float sampling_frequency;
 
@@ -46,7 +34,12 @@ public:
 
 private:
   bool moved = false;
-};
+  bool holds_data = true;
 
-using SignalF = Signal<float>;
+  // actual data
+  vector<float> data;
+
+  // slice data;
+  std::span<float> slice;
+};
 }; // namespace CodePP

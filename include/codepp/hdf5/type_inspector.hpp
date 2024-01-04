@@ -5,20 +5,6 @@
 namespace CodePP::HDF5 {
 class DatasetInspector {
 public:
-  enum Type {
-    INTEGER,
-    FLOAT,
-    TIME,
-    STRING,
-    BITFIELD,
-    OPAQUE,
-    COMPOUND,
-    REFERENCE,
-    ENUM,
-    VLEN,
-    ARRAY,
-    NOT_IMPLEMENTED,
-  };
   struct Field {
     string name;
     size_t offset, size;
