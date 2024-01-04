@@ -1,5 +1,6 @@
 #pragma once
 #include <codepp/core/types/signal.hpp>
+#include <codepp/core/types/electrode.hpp>
 #include <codepp/hdf5/h5utils.hpp>
 #include <prelude.hpp>
 
@@ -103,7 +104,7 @@ public:
   auto operator=(const H5Analog &other) = delete;
 
   [[nodiscard]] auto info() const -> string;
-  [[nodiscard]] auto operator[](const string &label) -> Result<Signal>;
+  [[nodiscard]] auto operator[](const Electrode& electrode) -> Result<Signal>;
 
 private:
   bool moved = false;

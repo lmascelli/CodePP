@@ -6,7 +6,7 @@ namespace CodePP::MEA {
 class Mea60 {
 public:
   Mea60() = delete;
-  static auto build(vector<string> grounded) -> Result<Mea>;
+  static auto build(vector<string> grounded = {}) -> Result<Mea>;
   static auto build(vector<pair<int, int>> grounded) -> Result<Mea>;
 
 private:
