@@ -1,4 +1,7 @@
+#include "codepp/core/types/recording.hpp"
 #include <codepp/hdf5/h5import.hpp>
+#include <cstddef>
+#include <functional>
 #include <hdf5/hdf5.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -248,6 +251,27 @@ auto H5Content::Open(string filename) -> Result<H5Content> {
       return ret;
     }
   }
+}
+
+auto H5Content::operator[](size_t analog_index)
+    -> Result<std::reference_wrapper<H5Analog>> {
+  if (analog_index >= analogs.size())
+    return Error{fmt::format("H5Content::operator[] index {} out of bounds",
+                             analog_index)};
+  else
+    return analogs[analog_index];
+}
+
+auto H5Content::fill_mea(size_t analog_index, const Mea &mea)
+    -> Result<Recording> {
+  Recording ret(mea);
+  size_t index = 0;
+  for (auto &el : mea.get_active_electrodes()) {
+    auto &analog = unwrap(operator[](analog_index)).get();
+    ret.signals.push_back(unwrap(analog[el]));
+    ret.signal_map.insert({el.label, index++});
+  }
+  return ret;
 }
 
 H5Content::H5Content(H5Content &&moved) {

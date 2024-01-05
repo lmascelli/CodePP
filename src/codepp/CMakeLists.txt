@@ -14,13 +14,13 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(fmt)
 
 set(CodePPLib_Core_HEADER_LIST
-    "types/signal.hpp" "types/mea.hpp" "operations/math.hpp"
+    "types/signal.hpp" "types/recording.hpp" "types/mea.hpp" "operations/math.hpp"
     "operations/spikes_detection.hpp")
 list(TRANSFORM CodePPLib_Core_HEADER_LIST
      PREPEND "${CodePP_SOURCE_DIR}/include/codepp/core/")
 
 set(CodePPLib_Core_SOURCES
-    "types/signal.cpp" "types/mea.cpp" "operations/math.cpp"
+    "types/signal.cpp" "types/recording.cpp" "types/mea.cpp" "operations/math.cpp"
     "operations/spikes_detection.cpp")
 list(TRANSFORM CodePPLib_Core_SOURCES
      PREPEND "${CodePP_SOURCE_DIR}/src/codepp/core/")

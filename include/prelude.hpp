@@ -40,6 +40,9 @@ using std::optional, std::nullopt;
 using std::variant;
 
 #include <fmt/format.h>
+using fmt::println, fmt::format;
+
+
 template <typename T>
 [[nodiscard]] auto expect(optional<T> opt, const string &message) -> T && {
   if (opt.has_value())

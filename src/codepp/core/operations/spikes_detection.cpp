@@ -1,11 +1,14 @@
+#include "codepp/core/types/electrode.hpp"
 #include <codepp/core/operations/math.hpp>
 #include <codepp/core/operations/spikes_detection.hpp>
+#include <thread>
+#include <unordered_map>
 
 namespace CodePP {
 
 static const sample OVERLAP = 5;
 
-auto spike_detection(Signal &signal, SpikeDetectionParameters sdp)
+auto spike_detection(Signal &signal, const SpikeDetectionParameters &sdp)
     -> Result<vector<sample>> {
   auto data = signal.get_data();
   sample peak_duration = sdp.peak_duration * signal.sampling_frequency;
@@ -134,6 +137,52 @@ auto spike_detection(Signal &signal, SpikeDetectionParameters sdp)
     }
   }
 
+  return ret;
+}
+
+void spike_detection_thread(std::unordered_map<string, vector<sample>> &ret,
+                            Recording &recording,
+                            const SpikeDetectionParameters &sdp, size_t start,
+                            size_t number) {
+  for (size_t i = start; i < start + number; ++i) {
+    auto &el = recording.mea.get_electrodes()[i];
+    auto &signal = recording.signals[recording.signal_map[el.label]];
+    ret.insert({el.label, unwrap(spike_detection(signal, sdp))});
+  }
+}
+
+auto spike_detection(Recording &recording, const SpikeDetectionParameters &sdp,
+                     unsigned int n_threads)
+    -> Result<std::unordered_map<string, vector<sample>>> {
+  std::unordered_map<string, vector<sample>> ret;
+  if (n_threads > 1) {
+    size_t number_of_electrodes = recording.mea.get_electrodes().size();
+    size_t electrodes_per_thread = number_of_electrodes / n_threads;
+
+    vector<std::thread> threads;
+
+    for (size_t i = 0; i < n_threads; ++i) {
+      auto number_of_electrodes_to_compute =
+          (i == n_threads - 1)
+              ? (number_of_electrodes - electrodes_per_thread * (n_threads - 1))
+              : electrodes_per_thread;
+      threads.emplace_back(spike_detection_thread, std::ref(ret),
+                           std::ref(recording), std::ref(sdp),
+                           i * electrodes_per_thread,
+                           number_of_electrodes_to_compute);
+    }
+    for (auto &thread : threads)
+      thread.join();
+
+    // return Error{"still not implemented"};
+  } else {
+    for (auto &el : recording.mea.get_active_electrodes()) {
+      ret.insert(
+          {el.label,
+           unwrap(spike_detection(
+               recording.signals[recording.signal_map[el.label]], sdp))});
+    }
+  }
   return ret;
 }
 

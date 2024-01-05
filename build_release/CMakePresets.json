@@ -1,0 +1,41 @@
+{
+    "version": 3,
+    "vendor": {
+        "conan": {}
+    },
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 15,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "conan-release",
+            "displayName": "'conan-release' config",
+            "description": "'conan-release' configure using 'MinGW Makefiles' generator",
+            "generator": "MinGW Makefiles",
+            "cacheVariables": {
+                "CMAKE_SH": "CMAKE_SH-NOTFOUND",
+                "CMAKE_POLICY_DEFAULT_CMP0091": "NEW",
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "environment": {
+                "PATH": "E:\\unige\\CodePP\\devel\\conan\\p\\ninjae2ad385cd85df\\p\\bin;E:\\unige\\CodePP\\devel\\conan\\p\\cmake615d6e26ece18\\p\\bin;$penv{PATH}"
+            },
+            "toolchainFile": "E:\\unige\\CodePP\\build_release\\conan_toolchain.cmake",
+            "binaryDir": "E:\\unige\\CodePP\\build_release"
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "conan-release",
+            "configurePreset": "conan-release"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "conan-release",
+            "configurePreset": "conan-release"
+        }
+    ]
+}

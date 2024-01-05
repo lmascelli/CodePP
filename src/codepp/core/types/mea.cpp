@@ -2,8 +2,9 @@
 #include <codepp/core/types/mea.hpp>
 
 namespace CodePP {
-Mea::Mea(vector<Electrode> electrodes) : electrodes(std::move(electrodes)) {
-  for (auto &el : electrodes) {
+Mea::Mea(const string &id, vector<Electrode> electrodes)
+    : id(std::move(id)), electrodes(std::move(electrodes)) {
+  for (auto &el : this->electrodes) {
     if (not el.grounded)
       active_electrodes.push_back(el);
   }
@@ -35,4 +36,32 @@ auto Mea::get_electrode(const string &label) -> Result<const Electrode> {
 auto Mea::get_electrodes() const -> const vector<Electrode> & {
   return electrodes;
 }
+
+auto Mea::get_active_electrodes() const -> const vector<Electrode> & {
+  return active_electrodes;
+}
+
+auto Mea::ground(const string &label) -> Result<bool> {
+  auto el = std::remove_if(active_electrodes.begin(), active_electrodes.end(),
+                         [label](Electrode &v) { return (v.label == label); });
+  if (el == active_electrodes.end()) {
+    return Error{fmt::format(
+        "Mea::ground: Cannot find electrode with label \"{}\"", label)};
+  }
+  return true;
+}
+
+auto Mea::ground(int row, int column) -> Result<bool> {
+  auto el = std::remove_if(active_electrodes.begin(), active_electrodes.end(),
+                         [row, column](Electrode &v) {
+                           return (v.row == row && v.column == column);
+                         });
+  if (el == active_electrodes.end()) {
+    return Error{
+        fmt::format("Mea::ground: Cannot find electrode with coords ({}, {})",
+                    row, column)};
+  }
+  return true;
+}
+
 } // namespace CodePP

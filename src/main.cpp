@@ -8,22 +8,17 @@ auto main() -> int {
   using namespace CodePP;
   const string filename =
       "E:/unige/raw data/03-10-2023/34341/hdf5/34341_DIV49_basal_0.h5";
-
   auto data = unwrap(HDF5::H5Content::Open(filename));
+  auto mea60 = unwrap(MEA::Mea60::build("34341"));
+  auto recording = unwrap(data.fill_mea(2, mea60));
+  auto spikes = unwrap(spike_detection(recording, {10e-5, 2e-3, 1e-3}, 1));
 
-  auto mea60 = unwrap(MEA::Mea60::build());
-  HDF5::H5File saved("test.h5");
-
-  for (int i = 1; i < 9; ++i) {
-    auto &struct_signal = saved.add_struct(fmt::format("signal{}", i));
-
-    auto signal = unwrap(data.analogs[2][unwrap(mea60.get_electrode(3, i))]);
-
-    auto spikes_detection =
-        unwrap(spike_detection(signal, {10e-5, 2e-3, 1e-3}));
-
-    struct_signal.add_uints("spikes", spikes_detection);
-    HDF5::H5Signal(struct_signal, signal);
+  const string savefile = "test.h5";
+  HDF5::H5File file(savefile);
+  for (auto &[label, index] : recording.signal_map) {
+    auto &group = file.add_struct(format("channel_{}", label));
+    // HDF5::H5Signal(group, recording.signals[index]);
+    group.add_uints("spikes", spikes[label]);
   }
   return 0;
 }

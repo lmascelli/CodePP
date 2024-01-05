@@ -1,6 +1,7 @@
 #pragma once
-#include <codepp/core/types/signal.hpp>
 #include <codepp/core/types/electrode.hpp>
+#include <codepp/core/types/recording.hpp>
+#include <codepp/core/types/signal.hpp>
 #include <codepp/hdf5/h5utils.hpp>
 #include <prelude.hpp>
 
@@ -104,7 +105,7 @@ public:
   auto operator=(const H5Analog &other) = delete;
 
   [[nodiscard]] auto info() const -> string;
-  [[nodiscard]] auto operator[](const Electrode& electrode) -> Result<Signal>;
+  [[nodiscard]] auto operator[](const Electrode &electrode) -> Result<Signal>;
 
 private:
   bool moved = false;
@@ -145,12 +146,15 @@ public:
 
   H5Content(const H5Content &other) = delete;
   auto operator=(const H5Content &other) -> H5Content & = delete;
+  [[nodiscard]] auto operator[](size_t analog_index)
+      -> Result<std::reference_wrapper<H5Analog>>;
+  [[nodiscard]] auto fill_mea(size_t analog_index, const Mea &mea) 
+      -> Result<Recording>;
 
   [[nodiscard]] auto get_tree() const -> string;
 
-  vector<H5Analog> analogs;
-
 private:
+  vector<H5Analog> analogs;
   H5Content(hid_t file_id, hid_t base_group_id);
   bool moved = false;
 

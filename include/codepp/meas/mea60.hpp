@@ -6,10 +6,8 @@ namespace CodePP::MEA {
 class Mea60 {
 public:
   Mea60() = delete;
-  static auto build(vector<string> grounded = {}) -> Result<Mea>;
-  static auto build(vector<pair<int, int>> grounded) -> Result<Mea>;
+  static auto build(const string& id) -> Result<Mea>;
 
-private:
   // clang-format off
   static constexpr array<Electrode, 60> electrodes = {{
                                {false, 1, 2, "12", 0, 0}, {false, 1, 3, "13", 0, 0}, {false, 1, 4, "14", 0, 0}, {false, 1, 5, "15", 0, 0}, {false, 1, 6, "16", 0, 0}, {false, 1, 7, "17", 0, 0},
@@ -22,6 +20,6 @@ private:
                                {false, 8, 2, "82", 0, 0}, {false, 8, 3, "83", 0, 0}, {false, 8, 4, "84", 0, 0}, {false, 8, 5, "85", 0, 0}, {false, 8, 6, "86", 0, 0}, {false, 8, 7, "87", 0, 0},
   }}; // clang-format on
 
-  static constexpr string name = "MEA60";
+  static constexpr string mea_name = "MEA60";
 };
 } // namespace CodePP::MEA

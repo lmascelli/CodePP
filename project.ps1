@@ -45,6 +45,16 @@ function Script:Build([string[]] $arg_list) {
   Pop-Location
 }
 
+function Script:Release {
+  conan profile detect --force
+  conan install . --output-folder=build_release --build=missing -s compiler.cppstd=20 -s build_type=Release
+
+  check_n_pop_directory("build_release")
+  cmake -G"Ninja" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOCHAIN_FILE=$Script:Toolchain_file $arg_list ..
+  cmake --build .
+  Pop-Location
+}
+
 function Script:Run {
   Push-Location build
   $command = './' + $project
@@ -55,6 +65,10 @@ function Script:Run {
 switch ($args[0]) {
   "build" {
     Build $args[1..($args.Length)]
+  }
+
+  "release" {
+    Release
   }
 
   "conan" {
