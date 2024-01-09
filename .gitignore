@@ -3,6 +3,9 @@ build/*
 build_release/*
 devel/*
 CMakeUserPresets.json
+pycode.pyd
+tags
+compile_commands.json
 
 # Prerequisites
 *.d

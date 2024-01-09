@@ -1,0 +1,9 @@
+#pragma once
+
+#define PYCODE_VERSION "@CodePP_VERSION@"
+
+#define PYCODE_WITH_MEAS @PyCode_with_meas@
+#define PYCODE_WITH_HDF5 @PyCode_with_hdf5@
+#define PYCODE_WITH_CSV  @PyCode_with_csv@
+
+

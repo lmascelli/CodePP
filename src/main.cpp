@@ -7,11 +7,11 @@
 auto main() -> int {
   using namespace CodePP;
   const string filename =
-      "E:/unige/raw data/03-10-2023/34341/hdf5/34341_DIV49_basal_0.h5";
+      "E:/unige/raw data/03-10-2023/34341/hdf5/34341_DIV49_basal_9.h5";
   auto data = unwrap(HDF5::H5Content::Open(filename));
   auto mea60 = unwrap(MEA::Mea60::build("34341"));
   auto recording = unwrap(data.fill_mea(2, mea60));
-  auto spikes = unwrap(spike_detection(recording, {10e-5, 2e-3, 1e-3}, 1));
+  auto spikes = unwrap(spike_detection(recording, {10e-5, 2e-3, 2e-3}, 4));
 
   const string savefile = "test.h5";
   HDF5::H5File file(savefile);

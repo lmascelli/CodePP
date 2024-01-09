@@ -8,6 +8,7 @@ class CodePP(ConanFile):
 
     def requirements(self):
         self.requires("hdf5/[>=1.14]")
+        self.requires("pybind11/[>=2.11]")
 
     def build_requirements(self):
         self.tool_requires("cmake/[>=3.22.6]")

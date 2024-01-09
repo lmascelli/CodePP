@@ -27,8 +27,10 @@ list(TRANSFORM CodePPLib_Core_SOURCES
 
 add_library(CodePPLib_Core ${CodePPLib_Core_HEADER_LIST}
                            ${CodePPLib_Core_SOURCES})
-target_link_libraries(CodePPLib_Core PUBLIC all_warnings warnings_are_errors
-                                            fmt::fmt)
+if (CMAKE_BUILD_TYPE EQUAL "Debug")
+  target_link_libraries(CodePPLib_Core PUBLIC all_warnings warnings_are_errors)
+endif()
+target_link_libraries(CodePPLib_Core PUBLIC fmt::fmt)
 target_include_directories(CodePPLib_Core PUBLIC "${CMAKE_SOURCE_DIR}/include")
 target_compile_features(CodePPLib_Core PUBLIC cxx_std_20)
 

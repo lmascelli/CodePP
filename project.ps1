@@ -2,7 +2,7 @@ $project = Split-Path -Path (Get-Location) -Leaf
 # this envoronment variable is used to locally install conan binaries if this
 # package manager is used
 $env:CONAN_HOME = "$((Get-Location).Path)/devel/conan"
-$Script:Toolchain_file = ""
+$Script:Toolchain_file = "conan_toolchain.cmake"
 
 # Check if a directory exists and create it if not. Then pop its location
 function Script:check_n_pop_directory([String]$name) {
@@ -27,7 +27,8 @@ function Script:ConanDependencies {
     }
   }
   conan profile detect --force
-  conan install . --output-folder=build --build=missing -s compiler.cppstd=20 -s build_type=Debug
+  conan install . --output-folder="build/Debug" --build=missing -s compiler.cppstd=20 -s build_type=Debug
+  conan install . --output-folder="build/Release" --build=missing -s compiler.cppstd=20 -s build_type=Release
 }
 
 function Script:Build([string[]] $arg_list) {
@@ -36,22 +37,23 @@ function Script:Build([string[]] $arg_list) {
   if ($Script:is_conan_depenendencies) {
     ConanDependencies
   }
-  New-Item -Type Directory -Path build -ErrorAction Ignore
-  Push-Location build
+  check_n_pop_directory("build/Debug")
   
-  Write-Output "Toolchain file: $Script:Toolchain_file"
-  cmake -G"Ninja" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOCHAIN_FILE=$Script:Toolchain_file $arg_list ..
+  cmake -G"Ninja" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOCHAIN_FILE=$Script:Toolchain_file $arg_list ../..
+  Copy-Item -Force compile_commands.json ../..
   cmake --build .
   Pop-Location
 }
 
 function Script:Release {
-  conan profile detect --force
-  conan install . --output-folder=build_release --build=missing -s compiler.cppstd=20 -s build_type=Release
+  check_n_pop_directory("build/Release")
 
-  check_n_pop_directory("build_release")
-  cmake -G"Ninja" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOCHAIN_FILE=$Script:Toolchain_file $arg_list ..
+  cmake -G"Ninja" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOCHAIN_FILE=$Script:Toolchain_file $arg_list ../..
+  Copy-Item -Force compile_commands.json ../..
   cmake --build .
+  if (Get-Item -Path "pycode/libPyCode.dll" -ErrorAction Ignore) {
+    Move-Item -Path "pycode/libPyCode.dll" -Destination "../pycode.pyd" -Force
+  }
   Pop-Location
 }
 
